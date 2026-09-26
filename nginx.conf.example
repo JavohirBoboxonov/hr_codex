@@ -1,0 +1,44 @@
+# Nginx configuration for hrlodex.uz
+# This config supports BrowserRouter (clean URLs without hash).
+# Deploy: copy to /etc/nginx/sites-available/hrlodex and symlink to sites-enabled.
+
+server {
+    listen 80;
+    server_name hrlodex.uz www.hrlodex.uz;
+
+    # Redirect HTTP → HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name hrlodex.uz www.hrlodex.uz;
+
+    ssl_certificate     /etc/letsencrypt/live/hrlodex.uz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/hrlodex.uz/privkey.pem;
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
+    root /var/www/hrlodex-frontend;
+    index index.html;
+
+    # Serve static assets with long cache
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Serve robots.txt and sitemap.xml directly
+    location = /robots.txt {
+        expires 1d;
+    }
+
+    location = /sitemap.xml {
+        expires 1d;
+    }
+
+    # SPA fallback — all paths serve index.html so BrowserRouter works
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

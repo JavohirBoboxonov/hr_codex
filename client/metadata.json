@@ -1,0 +1,8 @@
+{
+  "name": "HR LODEX - AI-Powered Interview SaaS",
+  "description": "HR LODEX is an AI-powered hiring platform that automates interviews, evaluates candidates, and helps companies hire smarter.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

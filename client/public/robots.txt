@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /hr-dashboard
+Disallow: /hr-analytics
+Disallow: /create-job
+Disallow: /hr-jobs
+Disallow: /candidate-dashboard
+Disallow: /my-applications
+Disallow: /admin-dashboard
+Disallow: /admin-tariffs
+Disallow: /admin-payments
+Disallow: /partner-dashboard
+Disallow: /buy-credits
+Disallow: /profile
+
+Sitemap: https://hrlodex.uz/sitemap.xml

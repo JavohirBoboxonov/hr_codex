@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+/* Tailwind v4: dark mode class orqali (html.dark) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Dark mode ni ta'minlash */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #020617;
+  color: #f1f5f9;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Remove browser default video outline/border on all devices */
+video {
+  outline: none;
+  border: none;
+  display: block;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

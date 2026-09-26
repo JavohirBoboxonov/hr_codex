@@ -1,0 +1,13 @@
+#!/bin/sh
+# Run TypeScript type check on server before committing
+
+echo "Running TypeScript check on server..."
+npm run build -w server --silent 2>&1
+
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript errors found in server. Commit aborted."
+  exit 1
+fi
+
+echo "✅ No TypeScript errors. Proceeding with commit."
+exit 0
