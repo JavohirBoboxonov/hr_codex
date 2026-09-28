@@ -1,9 +1,12 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const connectDB = async (): Promise<void> => {
   try {
     const conn = await mongoose.connect(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/hr-lodex'
+      process.env.MONGODB_URI || 'mongodb+srv://javohirboboxonovmaxmudovich_db_user:A9ohtWjtZb9nVFhz@cluster0.etsntrs.mongodb.net/?appName=Cluster0'
     );
     console.log(`MongoDB ulandi: ${conn.connection.host}`);
   } catch (error) {

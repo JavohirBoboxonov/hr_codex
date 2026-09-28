@@ -3,3 +3,4 @@ mongodb_data/
 .env.local
 .DS_Store
 node_modules
+MONGODB_URI = mongodb+srv://javohirboboxonovmaxmudovich_db_user:A9ohtWjtZb9nVFhz@cluster0.etsntrs.mongodb.net/?appName=Cluster0

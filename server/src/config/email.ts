@@ -27,16 +27,13 @@ function getSmtpConfig() {
     socketTimeout: Number(process.env.EMAIL_SOCKET_TIMEOUT || 30000),
   };
 }
-
-// Development: Ethereal test pochta (hech qanday sozlash kerak emas)
-// .env da EMAIL_USE_ETHEREAL=true yozing yoki EMAIL_USER/EMAIL_PASS bo'sh qoldiring
 async function getTransporter() {
   if (transporter) return transporter;
 
-  if (process.env.EMAIL_USE_ETHEREAL === 'true' || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+  if (process.env.EMAIL_USE_ETHEREAL === 'false' || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     const testAccount = await nodemailer.createTestAccount();
     transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: 'smtp.gmail.com',
       port: 587,
       secure: false,
       auth: {
@@ -86,7 +83,6 @@ const sendVerificationEmail = async (email, code, language = 'uz', type = 'verif
     };
 
     const info = await transport.sendMail(mailOptions);
-    // Ethereal rejimida - console da preview link
     if (process.env.EMAIL_USE_ETHEREAL === 'true' || !process.env.EMAIL_USER) {
       console.log('Email yuborildi:', nodemailer.getTestMessageUrl(info));
     }
