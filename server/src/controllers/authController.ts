@@ -4,8 +4,10 @@ import { sendVerificationEmail } from '../config/email';
 import { generateVerificationCode } from '../utils/generateCode';
 import { createErrorResponse, getLanguageFromRequest } from '../utils/errorMessages';
 import jwt, { type SignOptions } from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 
 const CODE_EXPIRY_MINUTES = 10;
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // JWT token yaratish
 const createToken = (userId: string, role: string | null) => {
@@ -270,10 +272,7 @@ export const login = async (req, res) => {
       return res.status(401).json(createErrorResponse(req, 'AUTH_INVALID_CREDENTIALS', 401));
     }
 
-    // Email tasdiqlanmagan yoki rol tanlanmagan bo'lsa ham kirishga ruxsat beramiz
-    // Default rol sifatida 'candidate' beramiz (agar tanlanmagan bo'lsa)
     const role = user.role || 'candidate';
-
     const token = createToken(user._id.toString(), role);
 
     res.status(200).json({
@@ -496,6 +495,67 @@ export const resetPassword = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Parol muvaffaqiyatli yangilandi',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server xatosi',
+    });
+  }
+};
+
+// 10. Google orqali kirish / Ro'yxatdan o'tish
+export const googleAuth = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json(createErrorResponse(req, 'AUTH_REQUIRED_FIELDS', 400));
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(400).json(createErrorResponse(req, 'AUTH_INVALID_CODE', 400));
+    }
+
+    const emailNorm = payload.email.toLowerCase();
+    const fullName = payload.name || 'Google User';
+
+    let user = await User.findOne({ email: emailNorm });
+
+    if (!user) {
+      user = await User.create({
+        fullName,
+        email: emailNorm,
+        password: Math.random().toString(36).slice(-8) + 'A1!',
+        isEmailVerified: true,
+        role: 'candidate',
+      });
+    }
+
+    const role = user.role || 'candidate';
+    const jwtToken = createToken(user._id.toString(), role);
+
+    res.status(200).json({
+      success: true,
+      message: 'Muvaffaqiyatli kirdingiz',
+      data: {
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: role,
+          interviews: user.interviews || 0,
+          freeJobsUsed: user.freeJobsUsed || 0,
+        },
+        token: jwtToken,
+        expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+      },
     });
   } catch (error) {
     res.status(500).json({
