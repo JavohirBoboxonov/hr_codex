@@ -197,6 +197,10 @@ export function resetPassword(email: string, code: string, newPassword: string, 
   });
 }
 
+export function getGoogleAuthUrl(): string {
+  return `${API_BASE}/auth/google`;
+}
+
 export const AUTH_TOKEN_KEY = "hrlodex_token";
 export const AUTH_USER_KEY = "hrlodex_user";
 
